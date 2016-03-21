@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<title>Cards</title>
+	<!-- Bootstrap CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+	<!-- Custom Styles -->
+	<style>
+		.item {
+			text-align: center;
+		}
+	</style>
+</head>
+
+<body>
+	<!-- 
+
+	стандартный bootstrap контейнер на 3 колонки.
+	в каждой колонке обертка, внутри нее - заголовок и обертка карточек.
+	карточка - <div class="panel panel-default item pending" data-id="">
+	пока все статично. потом карточки будут динамически добавляться
+	с помощью <c:forEach items="${cardList}" var="card">??
+	(на ангуляре было бы <div ng-repeat="{{ i in items }}"> и т.д.)
+	
+	нужно:
+	- аякс запрос который меняет состояние карточки, через вызов метода
+		changeState()
+  - метод changeState(params) - меняет состояние карточек
+  - метод render() - перезагружает страницу с обновленными карточками
+  - 3 поля: 
+  	ArrayList<Card> pending,
+  	ArrayList<Card> done,
+  	ArrayList<Card> undone,
+  	в которые добавляются карточки в зависимости от их состояния 
+  	('pending', 'done', 'undone')
+  - метод createCard(params) - создает карточку с указанными параметрами и 
+  	добавлет её в один из трех полей ArrayList<Card>
+  - метод удаления/добавления элементов из/в ArrayList<Card>
+	      
+-->
+
+	<div class="container">
+		<div class="row">
+
+			<div class="col-sm-4">
+
+				<div class="wrap">
+					<h2>Pending task</h2>
+					<div class="items">
+						
+						<div class="panel panel-default item pending" data-id="${id}">
+							<div class="panel-body">
+								<h4>${state} card
+									<span class="card-id">#${id}</span>
+								</h4>
+								<p>Card description</p>
+								<div class="btn-group">
+									<button type="button" class="btn btn-success" data-state="done">Done</button>
+									<button type="button" class="btn btn-warning" data-state="undone">Undone</button>
+								</div>
+							</div>
+						</div>
+						<!-- /.item -->
+
+					</div>
+					<!-- /.items -->
+				</div>
+				<!-- /.wrap pending -->
+
+			</div>
+			<!-- /.col-md-4 -->
+
+			<div class="col-sm-4">
+
+				<div class="wrap">
+					<h2>Done task</h2>
+					<div class="items">
+
+						<div class="panel panel-default item done" data-id="${id}">
+							<div class="panel-body">
+								<h4>${state} card
+									<span class="card-id">#${id}</span>
+								</h4>
+								<p>Card description</p>
+								<div class="btn-group">
+									<button type="button" class="btn btn-primary" data-state="redo">Redo</button>
+									<button type="button" class="btn btn-warning" data-state="undone">Undone</button>
+								</div>
+							</div>
+						</div>
+						<!-- /.items -->
+
+					</div>
+					<!-- /.items -->
+				</div>
+				<!-- /.wrap done -->
+
+			</div>
+			<!-- /.col-md-4 -->
+
+			<div class="col-sm-4">
+
+				<div class="wrap">
+					<h2>Undone task</h2>
+					<div class="items">
+
+						<div class="panel panel-default item undone" data-id="${id}">
+							<div class="panel-body">
+								<h4>${state} card
+									<span class="card-id">#${id}</span>
+								</h4>
+								<p>Card description</p>
+								<div class="btn-group">
+									<button type="button" class="btn btn-primary" data-state="redo">Redo</button>
+									<button type="button" class="btn btn-success" data-state="done">Done</button>
+								</div>
+							</div>
+						</div>
+						<!-- /.item -->
+
+					</div>
+					<!-- /.items -->
+				</div>
+				<!-- /.wrap undone -->
+
+			</div>
+			<!-- /.col-md-4 -->
+
+		</div>
+		<!-- /.row -->
+	</div>
+	<!-- /.container -->
+
+
+
+
+
+	<!-- jQuery -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
+	<!-- Bootstrap JS -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+	<!-- Custom JS -->
+	<script>
+		(function ($) {
+			$(document).ready(function () {
+
+				// выполнится при клике по кнопке
+				$('.btn').on('click', function () {
+
+					// кнопка по которой кликнули
+					var self = $(this);
+					// id карточки, из атрибута data-id
+					var cardId = self.closest('.item').data('id');
+					// состояние, в которое будет переключена карточка
+					var state = self.data('state');
+								
+					// ajax request
+					$.ajax({
+						// нужный нам url адрес
+						url: "index.html",
+						cache: false,
+						// функция, которая выполняется при успешном ответе
+						success: function () {
+							console.log('this is ' + state + ' btn');
+							
+							// вызов функции changeState
+							changeState(cardId, state);
+							
+						}
+					});
+					
+
+				})
+
+
+				// эта функция будет в контролере
+				function changeState(elem, state) {
+					
+					// функция которая меняет состояние карточки
+					// 1 параметр - id карточки, по которой кликнули
+					// 2 параметр - в какое состояние будет переключена карточка
+					
+					// здесь вызов функции, которая удаляет/добавляет карточки
+					// вызов функции которая перезагружает страницу
+					
+					console.log('this is card #' + elem + ', please change its state to - ' + state);
+				}
+
+
+			})
+		})(jQuery);
+	</script>
+</body>
+
+</html>
