@@ -60,8 +60,8 @@
 								</h4>
 									<p>${card.description}</p>
 									<div class="btn-group">
-										<button type="button" class="btn btn-success" data-state="done">Done</button>
-										<button type="button" class="btn btn-warning" data-state="undone">Undone</button>
+										<button type="button" class="btn btn-success" data-tostate="done">Done</button>
+										<button type="button" class="btn btn-warning" data-tostate="undone">Undone</button>
 									</div>
 								</div>
 							</div>
@@ -92,8 +92,8 @@
 								</h4>
 									<p>${card.description}</p>
 									<div class="btn-group">
-										<button type="button" class="btn btn-primary" data-state="redo">Redo</button>
-										<button type="button" class="btn btn-warning" data-state="undone">Undone</button>
+										<button type="button" class="btn btn-primary" data-tostate="redo">Redo</button>
+										<button type="button" class="btn btn-warning" data-tostate="undone">Undone</button>
 									</div>
 								</div>
 							</div>
@@ -124,8 +124,8 @@
 								</h4>
 									<p>${card.description}</p>
 									<div class="btn-group">
-										<button type="button" class="btn btn-primary" data-state="redo">Redo</button>
-										<button type="button" class="btn btn-success" data-state="done">Done</button>
+										<button type="button" class="btn btn-primary" data-tostate="redo">Redo</button>
+										<button type="button" class="btn btn-success" data-tostate="done">Done</button>
 									</div>
 								</div>
 							</div>
@@ -167,7 +167,7 @@
 					// id карточки, из атрибута data-id
 					var cardId = self.closest('.item').data('id');
 					// состояние, в которое будет переключена карточка
-					var state = self.data('state');
+					var tostate = self.data('tostate');
 
 					// ajax request
 					$.ajax({
@@ -176,10 +176,10 @@
 						cache: false,
 						// функция, которая выполняется при успешном ответе
 						success: function () {
-							console.log('this is ' + state + ' btn');
+							console.log('this is ' + tostate + ' btn');
 
 							// вызов функции changeState
-							changeState(cardId, state);
+							changeState(cardId, tostate);
 
 						}
 					});
@@ -202,7 +202,7 @@
 					
 					// ничего не возвращает
 
-					console.log('this is card #' + elem + ', please change its state to - ' + state);
+					console.log('this is card #' + elem + ', please change its state to - ' + tostate);
 					
 				}
 				
